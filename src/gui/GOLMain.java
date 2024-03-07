@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JToggleButton;
 import model.GameOfLife;
 
 /**
@@ -12,11 +13,13 @@ import model.GameOfLife;
  * @author tadaki
  */
 public class GOLMain extends javax.swing.JFrame {
-
+    
     private final DrawPanel drawPanel;
+    private final JToggleButton toggle;
     private final GameOfLife gol;
-    private final int n=128;
-
+    private final int n = 128;
+    private boolean running = false;
+    
     public enum InitialState {
         Random;
     }
@@ -34,16 +37,38 @@ public class GOLMain extends javax.swing.JFrame {
         getContentPane().add(drawPanel, java.awt.BorderLayout.CENTER);
         pack();
         drawPanel.initializePanel();
-        gol=new GameOfLife(n);
+        gol = new GameOfLife(n);
         drawPanel.setGameOfLife(gol);
+        toggle = new JToggleButton("START");
+        toggle.setSelected(false);
+        toggle.addActionListener(l -> {
+            toggleAction();
+        });
+        menuBar.add(toggle);
     }
-
-    private void setInitialState(){
-        switch(initState){
-            default -> gol.randomInitialize(0.5);
+    
+    private void toggleAction(){
+        if (running){
+                toggle.setText("START");
+                drawPanel.stop();
+                running=false;
+            } else {
+                toggle.setText("STOP");
+                setInitialState();
+                new Thread(drawPanel).start();
+                drawPanel.start();
+                running=true;
+            }
+        toggle.setSelected(false);
+    }
+    private void setInitialState() {
+        switch (initState) {
+            default ->
+                gol.randomInitialize(0.5);
         }
         drawPanel.clearImage();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -53,53 +78,34 @@ public class GOLMain extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttons = new javax.swing.JPanel();
-        quit = new javax.swing.JButton();
-        start = new javax.swing.JButton();
-        stop = new javax.swing.JButton();
-        saveImage = new javax.swing.JButton();
+        menuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        saveImage = new javax.swing.JMenuItem();
+        quit = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        buttons.setBackground(new java.awt.Color(204, 255, 255));
+        fileMenu.setText("File");
 
-        quit.setBackground(new java.awt.Color(204, 204, 255));
-        quit.setText("QUIT");
-        quit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                quitActionPerformed(evt);
-            }
-        });
-        buttons.add(quit);
-
-        start.setBackground(new java.awt.Color(204, 204, 255));
-        start.setText("START");
-        start.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startActionPerformed(evt);
-            }
-        });
-        buttons.add(start);
-
-        stop.setBackground(new java.awt.Color(204, 204, 255));
-        stop.setText("STOP");
-        stop.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopActionPerformed(evt);
-            }
-        });
-        buttons.add(stop);
-
-        saveImage.setBackground(new java.awt.Color(204, 204, 255));
         saveImage.setText("SaveImage");
         saveImage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveImageActionPerformed(evt);
             }
         });
-        buttons.add(saveImage);
+        fileMenu.add(saveImage);
 
-        getContentPane().add(buttons, java.awt.BorderLayout.NORTH);
+        quit.setText("QUIT");
+        quit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                quitActionPerformed(evt);
+            }
+        });
+        fileMenu.add(quit);
+
+        menuBar.add(fileMenu);
+
+        setJMenuBar(menuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -109,18 +115,9 @@ public class GOLMain extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_quitActionPerformed
 
-    private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
-        setInitialState();
-        new Thread(drawPanel).start();
-        drawPanel.start();
-    }//GEN-LAST:event_startActionPerformed
-
-    private void stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopActionPerformed
-        drawPanel.stop();
-    }//GEN-LAST:event_stopActionPerformed
-
     private void saveImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveImageActionPerformed
         drawPanel.stop();
+        toggleAction();
         try {
             drawPanel.saveImage("snapShot.png");
         } catch (IOException ex) {
@@ -162,10 +159,9 @@ public class GOLMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel buttons;
-    private javax.swing.JButton quit;
-    private javax.swing.JButton saveImage;
-    private javax.swing.JButton start;
-    private javax.swing.JButton stop;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem quit;
+    private javax.swing.JMenuItem saveImage;
     // End of variables declaration//GEN-END:variables
 }
