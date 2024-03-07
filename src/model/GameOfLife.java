@@ -37,7 +37,7 @@ public class GameOfLife {
                     break;
             }
         }
-        for(int i=0;i<n*n;i++){ cell[i]=dummy[i]; }
+        System.arraycopy(dummy, 0, cell, 0, n*n);
     }
 
     /**

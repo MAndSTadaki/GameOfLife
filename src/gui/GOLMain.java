@@ -40,9 +40,7 @@ public class GOLMain extends javax.swing.JFrame {
 
     private void setInitialState(){
         switch(initState){
-            default:
-                gol.randomInitialize(0.5);
-                break;
+            default -> gol.randomInitialize(0.5);
         }
         drawPanel.clearImage();
     }
@@ -158,10 +156,8 @@ public class GOLMain extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GOLMain().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new GOLMain().setVisible(true);
         });
     }
 
