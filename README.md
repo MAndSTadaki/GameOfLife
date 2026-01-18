@@ -1,6 +1,6 @@
 # Game of Life
 
-#packages
+## packages
 - `model`
     - `GameOfLife.java`
 - `gui`
